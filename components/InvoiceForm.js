@@ -2,6 +2,12 @@
 
 import LineItems from "./LineItems";
 
+const fieldClass =
+  "grid min-w-0 gap-2 text-left [&>span]:text-xs [&>span]:font-extrabold [&>span]:uppercase [&>span]:tracking-[0.08em] [&>span]:text-[#596576]";
+
+const inputClass =
+  "h-[47px] w-full rounded-[13px] border border-[#252d38] bg-[#0b1016] px-[15px] text-base font-medium text-[#f4f7fb] outline-none transition focus:border-[#4b7df3]/75 focus:ring-[3px] focus:ring-[#4b7df3]/10 disabled:opacity-60";
+
 function updateNested(setInvoiceData, section, key, value) {
   setInvoiceData((previous) => ({
     ...previous,
@@ -21,15 +27,17 @@ export default function InvoiceForm({ invoiceData, setInvoiceData }) {
   };
 
   return (
-    <section className="form-panel">
-      <header className="panel-heading">
-        <span className="status-dot status-dot-cyan" />
-        <h2>Invoice Details</h2>
+    <section className="overflow-hidden rounded-[19px] border border-[#2a323c] bg-[#151b22] shadow-[0_22px_55px_rgba(0,0,0,0.14)] sm:rounded-[25px] xl:h-[800px] print:hidden">
+      <header className="flex h-[62px] items-center gap-2.5 border-b border-[#232b34] bg-white/[0.015] px-5 sm:px-7">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[#45c7d8] shadow-[0_0_10px_rgba(69,199,216,0.8)]" />
+        <h2 className="text-[15px] font-bold tracking-[-0.01em]">
+          Invoice Details
+        </h2>
       </header>
 
-      <div className="form-scroll">
+      <div className="overflow-visible xl:h-[calc(100%-62px)] xl:overflow-y-auto">
         <FormSection title="Invoice Information">
-          <div className="field-grid field-grid-two">
+          <div className="grid gap-[15px] sm:grid-cols-2">
             <Field
               label="Invoice #"
               value={invoiceData.invoiceNo}
@@ -51,7 +59,7 @@ export default function InvoiceForm({ invoiceData, setInvoiceData }) {
         </FormSection>
 
         <FormSection title="Your Company">
-          <div className="field-grid">
+          <div className="grid gap-[15px]">
             <Field
               label="Company Name"
               value={invoiceData.company.name}
@@ -86,7 +94,7 @@ export default function InvoiceForm({ invoiceData, setInvoiceData }) {
         </FormSection>
 
         <FormSection title="Bill To">
-          <div className="field-grid">
+          <div className="grid gap-[15px]">
             <Field
               label="Client Name"
               value={invoiceData.client.name}
@@ -125,7 +133,7 @@ export default function InvoiceForm({ invoiceData, setInvoiceData }) {
         </FormSection>
 
         <FormSection title="Payment Details">
-          <div className="field-grid field-grid-three">
+          <div className="grid gap-[15px] sm:grid-cols-3">
             <Field
               label="Currency"
               value={invoiceData.currency}
@@ -162,8 +170,14 @@ export default function InvoiceForm({ invoiceData, setInvoiceData }) {
 
 function FormSection({ title, children, last = false }) {
   return (
-    <section className={`form-section${last ? " form-section-last" : ""}`}>
-      <h3>{title}</h3>
+    <section
+      className={`mx-5 py-6 sm:mx-7 sm:py-[26px] ${
+        last ? "" : "border-b border-[#252c34]"
+      }`}
+    >
+      <h3 className="mb-5 text-xs font-extrabold uppercase tracking-[0.1em] text-[#555f6e]">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -171,18 +185,29 @@ function FormSection({ title, children, last = false }) {
 
 function Field({ label, type = "text", value, onChange, min }) {
   return (
-    <label className="field">
+    <label className={fieldClass}>
       <span>{label}</span>
-      <input type={type} min={min} value={value} onChange={onChange} />
+      <input
+        className={`${inputClass} ${type === "date" ? "[color-scheme:dark]" : ""}`}
+        type={type}
+        min={min}
+        value={value}
+        onChange={onChange}
+      />
     </label>
   );
 }
 
 function Textarea({ label, value, onChange }) {
   return (
-    <label className="field">
+    <label className={fieldClass}>
       <span>{label}</span>
-      <textarea rows={3} value={value} onChange={onChange} />
+      <textarea
+        rows={3}
+        value={value}
+        onChange={onChange}
+        className="min-h-[82px] w-full resize-y rounded-[13px] border border-[#252d38] bg-[#0b1016] px-[15px] py-[13px] text-base font-medium leading-6 text-[#f4f7fb] outline-none transition focus:border-[#4b7df3]/75 focus:ring-[3px] focus:ring-[#4b7df3]/10"
+      />
     </label>
   );
 }
