@@ -1,115 +1,94 @@
 "use client";
 
-import generatePDF from "@/lib/generatePDF";
-import { Download } from "lucide-react";
-
 function calcTotals(data) {
   const subtotal = data.items.reduce(
     (sum, item) => sum + Number(item.quantity || 0) * Number(item.rate || 0),
-    0
+    0,
   );
   const tax = (subtotal * Number(data.taxRate || 0)) / 100;
   const discount = Number(data.discount || 0);
-  const total = subtotal + tax - discount;
-  return { subtotal, tax, discount, total };
+  return {
+    subtotal,
+    tax,
+    discount,
+    total: subtotal + tax - discount,
+  };
 }
 
 function money(symbol, amount) {
-  return `${symbol}${amount.toLocaleString("en-IN")}`;
+  return `${symbol}${Number(amount || 0).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function formatDate(value) {
+  if (!value) return "—";
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${value}T00:00:00`));
 }
 
 export default function InvoicePreview({ invoiceData, previewRef }) {
   const { subtotal, tax, discount, total } = calcTotals(invoiceData);
 
-  const handleDownload = async () => {
-    await generatePDF(previewRef.current, `${invoiceData.invoiceNo}.pdf`);
-  };
-
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur md:p-6">
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Invoice Preview</h2>
-          <p className="text-sm text-slate-400">Right panel live preview</p>
+    <section className="preview-panel">
+      <header className="preview-toolbar">
+        <div className="live-preview-label">
+          <span className="status-dot status-dot-green" />
+          <h2>Live Preview</h2>
         </div>
+        <span className="invoice-chip">{invoiceData.invoiceNo || "Invoice"}</span>
+      </header>
 
-        <button
-          type="button"
-          onClick={handleDownload}
-          className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-200"
-        >
-          <Download size={16} />
-          Download
-        </button>
-      </div>
+      <div className="invoice-paper-scroll">
+        <article className="invoice-paper print-area" ref={previewRef}>
+          <div className="invoice-accent" />
 
-      <div className="rounded-[28px] border border-white/10 bg-slate-950/50 p-4 md:p-6">
-        <div ref={previewRef} className="rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
-          <div className="mb-8 flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Invoice
-              </p>
-              <h3 className="mt-1 text-3xl font-bold">{invoiceData.invoiceNo}</h3>
-              <p className="mt-2 text-sm text-slate-500">
-                Issue Date: {invoiceData.issueDate || "-"} &nbsp;|&nbsp; Due Date:{" "}
-                {invoiceData.dueDate || "-"}
-              </p>
+          <header className="invoice-header">
+            <div className="invoice-brand">
+              <h3>{invoiceData.company.name || "Your Company"}</h3>
+              <p>{invoiceData.company.email}</p>
+            </div>
+            <div className="invoice-title">
+              <h1>Invoice</h1>
+              <p>#{invoiceData.invoiceNo || "—"}</p>
             </div>
 
-            <div className="text-right">
-              <div className="text-lg font-bold">{invoiceData.company.name}</div>
-              <p className="whitespace-pre-line text-sm text-slate-500">
-                {invoiceData.company.address}
-              </p>
-              <p className="mt-2 text-sm text-slate-500">{invoiceData.company.email}</p>
-              <p className="text-sm text-slate-500">{invoiceData.company.phone}</p>
-            </div>
+            <ContactBlock title="From" data={invoiceData.company} />
+            <ContactBlock title="Bill To" data={invoiceData.client} />
+          </header>
+
+          <div className="invoice-date-band">
+            <DateBlock label="Invoice Date" value={formatDate(invoiceData.issueDate)} />
+            <DateBlock label="Due Date" value={formatDate(invoiceData.dueDate)} />
           </div>
 
-          <div className="mb-6 grid gap-4 md:grid-cols-2">
-            <InfoCard title="Bill To">
-              <div className="font-semibold">{invoiceData.client.name}</div>
-              <p className="whitespace-pre-line text-sm text-slate-600">
-                {invoiceData.client.address}
-              </p>
-              <p className="text-sm text-slate-600">{invoiceData.client.email}</p>
-              <p className="text-sm text-slate-600">{invoiceData.client.phone}</p>
-            </InfoCard>
-
-            <InfoCard title="Invoice Summary">
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <span className="text-slate-500">Invoice No.</span>
-                <span className="text-right font-medium">{invoiceData.invoiceNo}</span>
-                <span className="text-slate-500">Currency</span>
-                <span className="text-right font-medium">{invoiceData.currency}</span>
-                <span className="text-slate-500">Tax %</span>
-                <span className="text-right font-medium">{invoiceData.taxRate}%</span>
-              </div>
-            </InfoCard>
-          </div>
-
-          <div className="overflow-hidden rounded-2xl border border-slate-200">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-100 text-slate-600">
+          <div className="invoice-body">
+            <table className="invoice-table">
+              <thead>
                 <tr>
-                  <th className="px-4 py-3">Description</th>
-                  <th className="px-4 py-3 text-right">Qty</th>
-                  <th className="px-4 py-3 text-right">Rate</th>
-                  <th className="px-4 py-3 text-right">Amount</th>
+                  <th>Description</th>
+                  <th className="numeric-cell">Qty</th>
+                  <th className="numeric-cell">Rate</th>
+                  <th className="numeric-cell">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {invoiceData.items.map((item) => {
                   const amount = Number(item.quantity || 0) * Number(item.rate || 0);
                   return (
-                    <tr key={item.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3">{item.description || "—"}</td>
-                      <td className="px-4 py-3 text-right">{item.quantity}</td>
-                      <td className="px-4 py-3 text-right">
-                        {money(invoiceData.currency, Number(item.rate || 0))}
+                    <tr key={item.id}>
+                      <td>{item.description || "—"}</td>
+                      <td className="numeric-cell muted-cell">{item.quantity}</td>
+                      <td className="numeric-cell muted-cell">
+                        {money(invoiceData.currency, item.rate)}
                       </td>
-                      <td className="px-4 py-3 text-right font-medium">
+                      <td className="numeric-cell amount-cell">
                         {money(invoiceData.currency, amount)}
                       </td>
                     </tr>
@@ -117,52 +96,65 @@ export default function InvoicePreview({ invoiceData, previewRef }) {
                 })}
               </tbody>
             </table>
-          </div>
 
-          <div className="mt-6 flex justify-end">
-            <div className="w-full max-w-sm space-y-2 rounded-2xl bg-slate-50 p-4">
-              <Row label="Subtotal" value={money(invoiceData.currency, subtotal)} />
-              <Row label={`Tax (${invoiceData.taxRate}%)`} value={money(invoiceData.currency, tax)} />
-              <Row label="Discount" value={money(invoiceData.currency, discount)} />
-              <div className="my-2 h-px bg-slate-200" />
-              <Row
-                label="Total"
-                value={money(invoiceData.currency, total)}
-                strong
+            <div className="invoice-totals">
+              <TotalRow
+                label="Subtotal"
+                value={money(invoiceData.currency, subtotal)}
               />
+              <TotalRow
+                label={`Tax (${invoiceData.taxRate || 0}%)`}
+                value={money(invoiceData.currency, tax)}
+              />
+              {discount > 0 && (
+                <TotalRow
+                  label="Discount"
+                  value={`-${money(invoiceData.currency, discount)}`}
+                />
+              )}
+              <div className="total-due-row">
+                <strong>Total Due</strong>
+                <span>{money(invoiceData.currency, total)}</span>
+              </div>
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-slate-200 p-4">
-            <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Notes
-            </h4>
-            <p className="mt-2 whitespace-pre-line text-sm text-slate-600">
-              {invoiceData.notes}
-            </p>
-          </div>
-        </div>
+          <footer className="invoice-notes">
+            <strong>Notes</strong>
+            <p>{invoiceData.notes || "Thank you for your business!"}</p>
+          </footer>
+        </article>
       </div>
     </section>
   );
 }
 
-function InfoCard({ title, children }) {
+function ContactBlock({ title, data }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <h4 className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-        {title}
-      </h4>
-      {children}
+    <section className="contact-block">
+      <h4>{title}</h4>
+      <strong>{data.name || "—"}</strong>
+      {data.email && <a href={`mailto:${data.email}`}>{data.email}</a>}
+      {data.phone && <p>{data.phone}</p>}
+      {data.address && <p className="contact-address">{data.address}</p>}
+    </section>
+  );
+}
+
+function DateBlock({ label, value }) {
+  return (
+    <div className="date-block">
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
 
-function Row({ label, value, strong = false }) {
+function TotalRow({ label, value }) {
   return (
-    <div className={`flex items-center justify-between text-sm ${strong ? "font-bold text-slate-900" : "text-slate-700"}`}>
+    <div className="total-row">
       <span>{label}</span>
-      <span>{value}</span>
+      <strong>{value}</strong>
     </div>
   );
 }

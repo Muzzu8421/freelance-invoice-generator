@@ -3,10 +3,10 @@
 import LineItems from "./LineItems";
 
 function updateNested(setInvoiceData, section, key, value) {
-  setInvoiceData((prev) => ({
-    ...prev,
+  setInvoiceData((previous) => ({
+    ...previous,
     [section]: {
-      ...prev[section],
+      ...previous[section],
       [key]: value,
     },
   }));
@@ -14,181 +14,175 @@ function updateNested(setInvoiceData, section, key, value) {
 
 export default function InvoiceForm({ invoiceData, setInvoiceData }) {
   const updateTop = (key, value) => {
-    setInvoiceData((prev) => ({
-      ...prev,
+    setInvoiceData((previous) => ({
+      ...previous,
       [key]: value,
     }));
   };
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur md:p-6">
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Invoice Form</h2>
-          <p className="text-sm text-slate-400">All editable fields live here</p>
-        </div>
-        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
-          Left panel
-        </span>
-      </div>
+    <section className="form-panel">
+      <header className="panel-heading">
+        <span className="status-dot status-dot-cyan" />
+        <h2>Invoice Details</h2>
+      </header>
 
-      <div className="space-y-6 overflow-y-auto pr-1">
-        <Section title="Invoice Info">
-          <div className="grid gap-4 sm:grid-cols-2">
+      <div className="form-scroll">
+        <FormSection title="Invoice Information">
+          <div className="field-grid field-grid-two">
             <Field
-              label="Invoice No."
+              label="Invoice #"
               value={invoiceData.invoiceNo}
-              onChange={(e) => updateTop("invoiceNo", e.target.value)}
+              onChange={(event) => updateTop("invoiceNo", event.target.value)}
             />
             <Field
               label="Issue Date"
               type="date"
               value={invoiceData.issueDate}
-              onChange={(e) => updateTop("issueDate", e.target.value)}
+              onChange={(event) => updateTop("issueDate", event.target.value)}
             />
             <Field
               label="Due Date"
               type="date"
               value={invoiceData.dueDate}
-              onChange={(e) => updateTop("dueDate", e.target.value)}
-            />
-            <Field
-              label="Currency"
-              value={invoiceData.currency}
-              onChange={(e) => updateTop("currency", e.target.value)}
-            />
-            <Field
-              label="Tax %"
-              type="number"
-              value={invoiceData.taxRate}
-              onChange={(e) => updateTop("taxRate", Number(e.target.value))}
-            />
-            <Field
-              label="Discount"
-              type="number"
-              value={invoiceData.discount}
-              onChange={(e) => updateTop("discount", Number(e.target.value))}
+              onChange={(event) => updateTop("dueDate", event.target.value)}
             />
           </div>
-        </Section>
+        </FormSection>
 
-        <Section title="Company Details">
-          <div className="grid gap-4">
+        <FormSection title="Your Company">
+          <div className="field-grid">
             <Field
               label="Company Name"
               value={invoiceData.company.name}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "company", "name", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "company", "name", event.target.value)
               }
             />
             <Field
               label="Email"
+              type="email"
               value={invoiceData.company.email}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "company", "email", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "company", "email", event.target.value)
               }
             />
             <Field
               label="Phone"
+              type="tel"
               value={invoiceData.company.phone}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "company", "phone", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "company", "phone", event.target.value)
               }
             />
             <Textarea
               label="Address"
               value={invoiceData.company.address}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "company", "address", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "company", "address", event.target.value)
               }
             />
           </div>
-        </Section>
+        </FormSection>
 
-        <Section title="Client Details">
-          <div className="grid gap-4">
+        <FormSection title="Bill To">
+          <div className="field-grid">
             <Field
               label="Client Name"
               value={invoiceData.client.name}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "client", "name", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "client", "name", event.target.value)
               }
             />
             <Field
               label="Email"
+              type="email"
               value={invoiceData.client.email}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "client", "email", e.target.value)
-              }
-            />
-            <Field
-              label="Phone"
-              value={invoiceData.client.phone}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "client", "phone", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "client", "email", event.target.value)
               }
             />
             <Textarea
               label="Address"
               value={invoiceData.client.address}
-              onChange={(e) =>
-                updateNested(setInvoiceData, "client", "address", e.target.value)
+              onChange={(event) =>
+                updateNested(setInvoiceData, "client", "address", event.target.value)
+              }
+            />
+            <Field
+              label="Phone"
+              type="tel"
+              value={invoiceData.client.phone}
+              onChange={(event) =>
+                updateNested(setInvoiceData, "client", "phone", event.target.value)
               }
             />
           </div>
-        </Section>
+        </FormSection>
 
-        <Section title="Line Items">
+        <FormSection title="Line Items">
           <LineItems invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
-        </Section>
+        </FormSection>
 
-        <Section title="Notes">
+        <FormSection title="Payment Details">
+          <div className="field-grid field-grid-three">
+            <Field
+              label="Currency"
+              value={invoiceData.currency}
+              onChange={(event) => updateTop("currency", event.target.value)}
+            />
+            <Field
+              label="Tax %"
+              type="number"
+              min="0"
+              value={invoiceData.taxRate}
+              onChange={(event) => updateTop("taxRate", Number(event.target.value))}
+            />
+            <Field
+              label="Discount"
+              type="number"
+              min="0"
+              value={invoiceData.discount}
+              onChange={(event) => updateTop("discount", Number(event.target.value))}
+            />
+          </div>
+        </FormSection>
+
+        <FormSection title="Notes" last>
           <Textarea
-            label="Footer note"
+            label="Footer Note"
             value={invoiceData.notes}
-            onChange={(e) => updateTop("notes", e.target.value)}
+            onChange={(event) => updateTop("notes", event.target.value)}
           />
-        </Section>
+        </FormSection>
       </div>
     </section>
   );
 }
 
-function Section({ title, children }) {
+function FormSection({ title, children, last = false }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">
-        {title}
-      </h3>
+    <section className={`form-section${last ? " form-section-last" : ""}`}>
+      <h3>{title}</h3>
       {children}
-    </div>
+    </section>
   );
 }
 
-function Field({ label, type = "text", value, onChange }) {
+function Field({ label, type = "text", value, onChange, min }) {
   return (
-    <label className="space-y-2">
-      <span className="text-sm text-slate-300">{label}</span>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-white/30 focus:bg-white/10"
-      />
+    <label className="field">
+      <span>{label}</span>
+      <input type={type} min={min} value={value} onChange={onChange} />
     </label>
   );
 }
 
 function Textarea({ label, value, onChange }) {
   return (
-    <label className="space-y-2">
-      <span className="text-sm text-slate-300">{label}</span>
-      <textarea
-        rows={4}
-        value={value}
-        onChange={onChange}
-        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none transition focus:border-white/30 focus:bg-white/10"
-      />
+    <label className="field">
+      <span>{label}</span>
+      <textarea rows={3} value={value} onChange={onChange} />
     </label>
   );
 }

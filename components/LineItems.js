@@ -10,80 +10,84 @@ const blankItem = () => ({
 });
 
 export default function LineItems({ invoiceData, setInvoiceData }) {
-  const items = invoiceData.items;
-
   const updateItem = (index, key, value) => {
-    setInvoiceData((prev) => {
-      const next = [...prev.items];
-      next[index] = {
-        ...next[index],
+    setInvoiceData((previous) => {
+      const items = [...previous.items];
+      items[index] = {
+        ...items[index],
         [key]: key === "quantity" || key === "rate" ? Number(value) : value,
       };
-      return { ...prev, items: next };
+      return { ...previous, items };
     });
   };
 
   const addItem = () => {
-    setInvoiceData((prev) => ({
-      ...prev,
-      items: [...prev.items, blankItem()],
+    setInvoiceData((previous) => ({
+      ...previous,
+      items: [...previous.items, blankItem()],
     }));
   };
 
   const removeItem = (index) => {
-    setInvoiceData((prev) => ({
-      ...prev,
-      items: prev.items.length === 1 ? prev.items : prev.items.filter((_, i) => i !== index),
+    setInvoiceData((previous) => ({
+      ...previous,
+      items:
+        previous.items.length === 1
+          ? previous.items
+          : previous.items.filter((_, itemIndex) => itemIndex !== index),
     }));
   };
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-3">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 md:grid-cols-[1.6fr_0.5fr_0.7fr_auto]"
-          >
-            <input
-              value={item.description}
-              onChange={(e) => updateItem(index, "description", e.target.value)}
-              placeholder="Description"
-              className="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-2 text-sm outline-none"
-            />
-            <input
+    <div className="line-items-editor">
+      {invoiceData.items.map((item, index) => (
+        <div className="line-item-editor" key={item.id}>
+          <Field
+            label="Description"
+            value={item.description}
+            onChange={(event) => updateItem(index, "description", event.target.value)}
+          />
+          <div className="line-item-numbers">
+            <Field
+              label="Qty"
               type="number"
+              min="0"
               value={item.quantity}
-              onChange={(e) => updateItem(index, "quantity", e.target.value)}
-              placeholder="Qty"
-              className="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-2 text-sm outline-none"
+              onChange={(event) => updateItem(index, "quantity", event.target.value)}
             />
-            <input
+            <Field
+              label="Rate"
               type="number"
+              min="0"
               value={item.rate}
-              onChange={(e) => updateItem(index, "rate", e.target.value)}
-              placeholder="Rate"
-              className="w-full rounded-xl border border-white/10 bg-slate-950/50 px-3 py-2 text-sm outline-none"
+              onChange={(event) => updateItem(index, "rate", event.target.value)}
             />
             <button
               type="button"
+              className="remove-item-button"
               onClick={() => removeItem(index)}
-              className="inline-flex items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-red-300 transition hover:bg-red-500/20"
+              aria-label={`Remove ${item.description || "line item"}`}
+              disabled={invoiceData.items.length === 1}
             >
-              <Trash2 size={16} />
+              <Trash2 size={17} />
             </button>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
-      <button
-        type="button"
-        onClick={addItem}
-        className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-medium text-slate-950 transition hover:bg-slate-200"
-      >
+      <button type="button" className="add-item-button" onClick={addItem}>
         <Plus size={16} />
         Add Item
       </button>
     </div>
+  );
+}
+
+function Field({ label, type = "text", value, onChange, min }) {
+  return (
+    <label className="field">
+      <span>{label}</span>
+      <input type={type} min={min} value={value} onChange={onChange} />
+    </label>
   );
 }

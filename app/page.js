@@ -1,67 +1,104 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Download } from "lucide-react";
 import InvoiceForm from "@/components/InvoiceForm";
 import InvoicePreview from "@/components/InvoicePreview";
-
-const createItem = () => ({
-  id: crypto.randomUUID(),
-  description: "Design work",
-  quantity: 1,
-  rate: 2500,
-});
+import generatePDF from "@/lib/generatePDF";
 
 const initialInvoice = {
   invoiceNo: "INV-001",
-  issueDate: new Date().toISOString().split("T")[0],
-  dueDate: "",
-  currency: "₹",
-  taxRate: 18,
+  issueDate: "2026-06-18",
+  dueDate: "2026-07-18",
+  currency: "$",
+  taxRate: 10,
   discount: 0,
   company: {
-    name: "Your Studio",
-    email: "hello@yourstudio.com",
-    phone: "+91 90000 00000",
-    address: "Your company address line 1\nCity, State, PIN",
+    name: "Your Company",
+    email: "hello@yourcompany.com",
+    phone: "",
+    address: "",
   },
   client: {
-    name: "Client Name",
-    email: "client@email.com",
+    name: "Acme Corporation",
+    email: "billing@acme.com",
     phone: "",
-    address: "Client address line 1\nCity, State, PIN",
+    address: "123 Business St\nSan Francisco, CA 94105",
   },
-  notes: "Thank you for your business.",
-  items: [createItem()],
+  notes: "Thank you for your business!",
+  items: [
+    {
+      id: "item-1",
+      description: "Web Development Services",
+      quantity: 40,
+      rate: 150,
+    },
+    {
+      id: "item-2",
+      description: "UI/UX Design",
+      quantity: 20,
+      rate: 120,
+    },
+  ],
 };
 
 export default function Page() {
   const [invoiceData, setInvoiceData] = useState(initialInvoice);
+  const [isExporting, setIsExporting] = useState(false);
   const previewRef = useRef(null);
 
-  return (
-    <main className="min-h-screen bg-[#0b1020] text-white">
-      <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
-        <div className="mb-6 flex flex-col gap-2">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-400">
-            Freelance Invoice Generator
-          </p>
-          <h1 className="text-2xl font-semibold md:text-4xl">
-            Build invoices, preview live, export in one click
-          </h1>
-          <p className="max-w-2xl text-sm text-slate-400 md:text-base">
-            Edit client details on the left and watch the invoice update on the
-            right. The preview is the exact content that gets exported.
-          </p>
-        </div>
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      await generatePDF(previewRef.current, `${invoiceData.invoiceNo || "invoice"}.pdf`);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <InvoiceForm invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
-          <InvoicePreview
-            invoiceData={invoiceData}
-            previewRef={previewRef}
-          />
+  return (
+    <div className="app-shell">
+      <header className="site-header">
+        <div className="header-inner">
+          <div className="brand-group">
+            <div className="flowdoc-mark" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="brand-copy">
+              <strong>Flowdoc</strong>
+              <span>Invoice Generator</span>
+            </div>
+            <div className="brand-divider" aria-hidden="true" />
+            <div className="hero-badge">
+              <span />
+              Built for Digital Heroes
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="export-button"
+            onClick={handleExport}
+            disabled={isExporting}
+          >
+            <Download size={17} strokeWidth={2} />
+            {isExporting ? "Exporting..." : "Export PDF"}
+          </button>
         </div>
-      </div>
-    </main>
+      </header>
+
+      <main className="app-main">
+        <div className="workspace-grid">
+          <InvoiceForm invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
+          <InvoicePreview invoiceData={invoiceData} previewRef={previewRef} />
+        </div>
+      </main>
+
+      <footer className="site-footer">
+        Flowdoc <span>·</span> Premium Invoice Generator
+      </footer>
+    </div>
   );
 }
