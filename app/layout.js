@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Freelance Invoice Generator",
+  title: "Flowdoc — Freelance Invoice Generator",
   description: "Live invoice editor with preview and PDF download",
 };
 

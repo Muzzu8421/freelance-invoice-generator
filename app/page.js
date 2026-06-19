@@ -59,7 +59,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-[#0b1016] bg-[radial-gradient(circle_at_52%_0%,rgba(41,75,150,0.12),transparent_34%)] print:bg-white">
-      <header className="h-[70px] border-b border-[#252c34] bg-[#0a0f15]/95 print:hidden">
+      <header className="h-17.5 border-b border-[#252c34] bg-[#0a0f15]/95 print:hidden">
         <div className="mx-auto flex h-full w-full max-w-[1656px] items-center justify-between gap-3 px-3 sm:px-5 lg:px-6">
           <div className="flex min-w-0 items-center">
             <Image
@@ -69,7 +69,7 @@ export default function Page() {
               height={30}
               priority
               unoptimized
-              className="mr-2.5 h-[30px] w-12 shrink-0 object-contain sm:mr-3.5"
+              className="mr-2.5 h-7.5 w-12 shrink-0 object-contain sm:mr-3.5"
             />
 
             <div className="flex min-w-0 flex-col leading-none">
@@ -112,13 +112,13 @@ export default function Page() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1656px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-[35px] print:max-w-none print:p-0">
+      <main className="mx-auto w-full max-w-[1656px] px-3 py-5 sm:px-5 sm:py-7 lg:px-6 lg:py-8.75 print:max-w-none print:p-0">
         <div className="grid items-start gap-5 xl:grid-cols-[minmax(400px,526px)_minmax(0,1fr)] print:block">
           <InvoiceForm invoiceData={invoiceData} setInvoiceData={setInvoiceData} />
           <InvoicePreview invoiceData={invoiceData} previewRef={previewRef} />
         </div>
       </main>
-      <footer className="flex min-h-[77px] flex-col items-center justify-center gap-1.5 border-t border-[#151b22] px-4 text-center print:hidden">
+      <footer className="flex min-h-19.25 flex-col items-center justify-center gap-1.5 border-t border-[#151b22] px-4 text-center print:hidden">
         <span className="text-[15px] font-bold tracking-[-0.01em] text-[#e8edf3]">
           Shaikh Muzakkir Shaikh Ajam
         </span>
