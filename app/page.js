@@ -11,7 +11,7 @@ const initialInvoice = {
   invoiceNo: "INV-001",
   issueDate: "2026-06-18",
   dueDate: "2026-07-18",
-  currency: "$",
+  currency: "₹",
   taxRate: 10,
   discount: 0,
   company: {
@@ -86,10 +86,15 @@ export default function Page() {
               className="mx-5 hidden h-7 w-px bg-[#2c343e] md:block"
             />
 
-            <div className="hidden h-[29px] items-center gap-2 whitespace-nowrap rounded-full border border-[#23466e] bg-[#0c1929] px-3 text-[13px] font-semibold text-[#6f99cd] md:flex">
+            <a
+              href="https://digitalheroesco.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden h-7.25 items-center gap-2 whitespace-nowrap rounded-full border border-[#23466e] bg-[#0c1929] px-3 text-[13px] font-semibold text-[#6f99cd] md:flex"
+            >
               <span className="h-1.5 w-1.5 rounded-full bg-[#34c39a] shadow-[0_0_10px_rgba(52,195,154,0.75)]" />
               Built for Digital Heroes
-            </div>
+            </a>
           </div>
 
           <button
@@ -113,10 +118,20 @@ export default function Page() {
           <InvoicePreview invoiceData={invoiceData} previewRef={previewRef} />
         </div>
       </main>
-
-      <footer className="flex min-h-[77px] items-center justify-center gap-1 border-t border-[#151b22] px-4 text-center text-sm text-[#252d37] print:hidden">
-        Flowdoc <span>·</span> Premium Invoice Generator
-      </footer>
+      <footer className="flex min-h-[77px] flex-col items-center justify-center gap-1.5 border-t border-[#151b22] px-4 text-center print:hidden">
+  <span className="text-[15px] font-bold tracking-[-0.01em] text-[#e8edf3]">
+    Shaikh Muzakkir Shaikh Ajam
+  </span>
+  <a
+    href="mailto:skmuzakkir750@gmail.com"
+    className="text-[13px] font-semibold text-[#34c39a] transition-opacity hover:opacity-80"
+  >
+    skmuzakkir750@gmail.com
+  </a>
+  <span className="mt-0.5 text-[12px] text-[#6b7a8d]">
+    Flowdoc · Freelance Invoice Generator
+  </span>
+</footer>
     </div>
   );
 }
