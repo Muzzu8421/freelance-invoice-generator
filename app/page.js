@@ -119,19 +119,19 @@ export default function Page() {
         </div>
       </main>
       <footer className="flex min-h-[77px] flex-col items-center justify-center gap-1.5 border-t border-[#151b22] px-4 text-center print:hidden">
-  <span className="text-[15px] font-bold tracking-[-0.01em] text-[#e8edf3]">
-    Shaikh Muzakkir Shaikh Ajam
-  </span>
-  <a
-    href="mailto:skmuzakkir750@gmail.com"
-    className="text-[13px] font-semibold text-[#34c39a] transition-opacity hover:opacity-80"
-  >
-    skmuzakkir750@gmail.com
-  </a>
-  <span className="mt-0.5 text-[12px] text-[#6b7a8d]">
-    Flowdoc · Freelance Invoice Generator
-  </span>
-</footer>
+        <span className="text-[15px] font-bold tracking-[-0.01em] text-[#e8edf3]">
+          Shaikh Muzakkir Shaikh Ajam
+        </span>
+        <a
+          href="mailto:skmuzakkir750@gmail.com"
+          className="text-[13px] font-semibold text-[#34c39a] transition-opacity hover:opacity-80"
+        >
+          skmuzakkir750@gmail.com
+        </a>
+        <span className="mt-0.5 text-[12px] text-[#6b7a8d]">
+          Flowdoc · Freelance Invoice Generator
+        </span>
+      </footer>
     </div>
   );
 }
